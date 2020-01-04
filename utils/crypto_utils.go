@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"io"
 )
 
@@ -19,10 +20,16 @@ func GenerateKey() string {
 // DecryptMessage method declaration
 func DecryptMessage(id string, key []byte, encryptedText []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
-	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid Key")
+	}
+	gcm, _ := cipher.NewGCM(block)
 	nonceSize := gcm.NonceSize()
 	nonce, ciphertext := encryptedText[:nonceSize], encryptedText[nonceSize:]
 	decryptedText, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return nil, fmt.Errorf("Message Authentication Failed")
+	}
 	return decryptedText, err
 }
 
