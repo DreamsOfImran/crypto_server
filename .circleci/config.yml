@@ -13,9 +13,9 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Run unit tests
-        command:
-          sh bin/test
+          name: Run unit tests
+          command:
+            sh bin/test
 
 workflows:
   version: 2
