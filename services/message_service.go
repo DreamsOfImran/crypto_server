@@ -16,22 +16,25 @@ type messageService struct {
 }
 
 // NewMessageService method declaration
-func NewMessageService() (MessageService, error) {
+func NewMessageService() MessageService {
 	return &messageService{
 		Message: make(map[string]*models.Message),
-	}, nil
+	}
 }
 
 func (ms messageService) ReceiveMessage(key string, msg string) (*models.Message, error) {
 	result, err := models.Decrypt(key, msg)
 	if err != nil {
-		return nil, fmt.Errorf("Error in decrypting the message")
+		return nil, fmt.Errorf(err.Error())
 	}
 	return result, nil
 }
 
 func (ms messageService) EncryptMessage(key string, msg string) (*models.Message, error) {
-	result, _ := models.Encrypt(key, msg)
+	result, err := models.Encrypt(key, msg)
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
 
 	return result, nil
 }

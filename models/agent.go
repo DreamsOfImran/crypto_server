@@ -12,11 +12,11 @@ type Agent struct {
 }
 
 // NewAgent method declaration
-func NewAgent(agentID string) (*Agent, error) {
+func NewAgent(agentID string) *Agent {
 	return &Agent{
 		AgentID: agentID,
 		Key:     generateKey(),
-	}, nil
+	}
 }
 
 func generateKey() string {

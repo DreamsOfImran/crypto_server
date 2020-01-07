@@ -12,8 +12,8 @@ import (
 // Handler method declaration
 func Handler(engine *gin.Engine) {
 	routes := engine.Group("/")
-	agentService, _ := services.NewAgentService()
-	messageService, _ := services.NewMessageService()
+	agentService := services.NewAgentService()
+	messageService := services.NewMessageService()
 
 	routes.POST("/register/:id", func(ctx *gin.Context) {
 		result, err := agentService.AddAgent(ctx.Param("id"))
