@@ -1,4 +1,4 @@
 #!/bin/bash
 
 go test ./services/ -v -cover
-go test ./utils/ -v -cover
+go test ./models/ -v -cover
