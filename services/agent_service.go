@@ -24,7 +24,7 @@ func NewAgentService() AgentService {
 
 func (c agentService) AddAgent(agentID string) (*models.Agent, error) {
 	if c.Agents[agentID] != nil {
-		return nil, fmt.Errorf("Agent ID already exists")
+		return c.Agents[agentID], fmt.Errorf("Agent ID already exists")
 	}
 	result := models.NewAgent(agentID)
 	c.Agents[agentID] = result

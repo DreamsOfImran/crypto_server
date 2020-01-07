@@ -19,7 +19,8 @@ func Handler(engine *gin.Engine) {
 		result, err := agentService.AddAgent(ctx.Param("id"))
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"data": map[string]interface{}{"Error": fmt.Sprint(err)},
+				"data":  result,
+				"Error": fmt.Sprint(err),
 			})
 			return
 		}
