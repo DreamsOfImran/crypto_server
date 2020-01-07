@@ -9,31 +9,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Handler for gin routes
+// Handler method declaration
 func Handler(engine *gin.Engine) {
 	routes := engine.Group("/")
+	agentService, _ := services.NewAgentService()
+	messageService, _ := services.NewMessageService()
 
 	routes.POST("/register/:id", func(ctx *gin.Context) {
-		response, err := services.Register(ctx.Param("id"))
+		result, err := agentService.AddAgent(ctx.Param("id"))
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"data": map[string]interface{}{"Error": fmt.Sprint(err)},
 			})
 			return
 		}
-
 		ctx.JSON(http.StatusOK, gin.H{
-			"data": map[string]interface{}{
-				"ID":  response.ID,
-				"Key": response.Key,
-			},
+			"data": result,
 		})
 	})
 
 	routes.POST("/send_message/:id", func(ctx *gin.Context) {
 		message := &models.JSONMessage{}
-		ctx.BindJSON(&message)
-		response, err := services.SendMessage(ctx.Param("id"), message.EncryptedText)
+		ctx.BindJSON(message)
+		agent, err := agentService.FindByID(ctx.Param("id"))
+		result, err := messageService.ReceiveMessage(agent.Key, message.EncryptedText)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"data": map[string]interface{}{"Error": fmt.Sprint(err)},
@@ -42,19 +41,25 @@ func Handler(engine *gin.Engine) {
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"ID":                response.ID,
-			"Decrypted Message": response.DecryptedText,
+			"data": result,
 		})
 	})
 
 	routes.POST("/encrypt_message/:id", func(ctx *gin.Context) {
 		message := &models.JSONMessage{}
-		ctx.BindJSON(&message)
-		response := services.EncryptMessage(ctx.Param("id"), message.EncryptedText)
+		ctx.BindJSON(message)
+		agent, err := agentService.FindByID(ctx.Param("id"))
+		result, err := messageService.EncryptMessage(agent.Key, message.EncryptedText)
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"data": map[string]interface{}{"Error": fmt.Sprint(err)},
+			})
+			return
+		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"ID":                response.ID,
-			"Encrypted Message": response.DecryptedText,
+			"data": result,
 		})
 	})
 }
