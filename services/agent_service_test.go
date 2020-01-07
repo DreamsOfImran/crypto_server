@@ -16,7 +16,8 @@ func TestAgentService(t *testing.T) {
 
 	t.Run("should return error for existing agent ID", func(t *testing.T) {
 		response, err := agentService.AddAgent("1")
-		assert.Nil(t, response)
+		assert.NotNil(t, response)
+		assert.Equal(t, "1", response.AgentID)
 		assert.Equal(t, "Agent ID already exists", err.Error())
 	})
 
