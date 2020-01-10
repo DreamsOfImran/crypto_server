@@ -10,6 +10,6 @@ func TestAgent(t *testing.T) {
 		response := NewAgent("2")
 
 		assert.Equal(t, "2", response.AgentID)
-		assert.NotEmpty(t, response.Key)
+		assert.NotEmpty(t, response.PublicKey)
 	})
 }

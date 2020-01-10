@@ -1,27 +1,20 @@
 package models
 
-import (
-	"crypto/rand"
-	"encoding/base64"
-)
+import "github.com/DreamsOfImran/crypto_server/utils"
 
 // Agent struct declaration
 type Agent struct {
-	AgentID string
-	Key     string
+	AgentID    string
+	PublicKey  string
+	PrivateKey string
 }
 
 // NewAgent method declaration
 func NewAgent(agentID string) *Agent {
+	privKey, pubKey := utils.GenerateKey()
 	return &Agent{
-		AgentID: agentID,
-		Key:     generateKey(),
+		AgentID:    agentID,
+		PublicKey:  pubKey,
+		PrivateKey: privKey,
 	}
-}
-
-func generateKey() string {
-	key := make([]byte, 16)
-	rand.Read(key)
-	encodedKey := base64.URLEncoding.EncodeToString(key)
-	return encodedKey
 }

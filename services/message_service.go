@@ -12,29 +12,36 @@ type MessageService interface {
 }
 
 type messageService struct {
-	Message map[string]*models.Message
+	Message      map[string]*models.Message
+	AgentService AgentService
 }
 
 // NewMessageService method declaration
-func NewMessageService() MessageService {
+func NewMessageService(agentService AgentService) MessageService {
 	return &messageService{
-		Message: make(map[string]*models.Message),
+		Message:      make(map[string]*models.Message),
+		AgentService: agentService,
 	}
 }
 
-func (ms messageService) ReceiveMessage(key string, msg string) (*models.Message, error) {
-	result, err := models.Decrypt(key, msg)
+func (ms messageService) ReceiveMessage(agendID string, msg string) (*models.Message, error) {
+	key, _ := ms.AgentService.FindByID(agendID)
+	result, err := models.Decrypt(key.PrivateKey, msg)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 	return result, nil
 }
 
-func (ms messageService) EncryptMessage(key string, msg string) (*models.Message, error) {
-	result, err := models.Encrypt(key, msg)
+func (ms messageService) EncryptMessage(agendID string, msg string) (*models.Message, error) {
+	// agentService := NewAgentService()
+	key, err := ms.AgentService.FindByID(agendID)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
-
+	result, err := models.Encrypt(key.PublicKey, msg)
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
 	return result, nil
 }
