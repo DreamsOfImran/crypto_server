@@ -6,7 +6,8 @@ import (
 )
 
 func TestMessageService(t *testing.T) {
-	messageService := NewMessageService()
+	agentService := NewAgentService()
+	messageService := NewMessageService(agentService)
 
 	t.Run("should return the decrypted text", func(t *testing.T) {
 		key, msg := "PDQ3iVJB7ZZuv05aZO435g==", "Yj1x27hy-KeezEM6LGo4do093vSKiQZzJ7J5OLBLgojkireIrlQr"

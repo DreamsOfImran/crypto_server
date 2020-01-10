@@ -13,7 +13,7 @@ import (
 func Handler(engine *gin.Engine) {
 	routes := engine.Group("/")
 	agentService := services.NewAgentService()
-	messageService := services.NewMessageService()
+	messageService := services.NewMessageService(agentService)
 
 	routes.POST("/register/:id", func(ctx *gin.Context) {
 		result, err := agentService.AddAgent(ctx.Param("id"))
@@ -32,8 +32,7 @@ func Handler(engine *gin.Engine) {
 	routes.POST("/send_message/:id", func(ctx *gin.Context) {
 		message := &models.JSONMessage{}
 		ctx.BindJSON(message)
-		agent, err := agentService.FindByID(ctx.Param("id"))
-		result, err := messageService.ReceiveMessage(agent.Key, message.EncryptedText)
+		result, err := messageService.ReceiveMessage(ctx.Param("id"), message.EncryptedText)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"data": map[string]interface{}{"Error": fmt.Sprint(err)},
@@ -49,8 +48,7 @@ func Handler(engine *gin.Engine) {
 	routes.POST("/encrypt_message/:id", func(ctx *gin.Context) {
 		message := &models.JSONMessage{}
 		ctx.BindJSON(message)
-		agent, err := agentService.FindByID(ctx.Param("id"))
-		result, err := messageService.EncryptMessage(agent.Key, message.EncryptedText)
+		result, err := messageService.EncryptMessage(ctx.Param("id"), message.EncryptedText)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
